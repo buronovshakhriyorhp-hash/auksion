@@ -327,6 +327,24 @@ function initials(name) {
     return name.split(' ').map(n=>n[0]||'').join('').toUpperCase().slice(0,2) || 'U';
 }
 
+function getUserAliases(user) {
+    if (!user) return [];
+    return [
+        `${user.first || ''} ${user.last || ''}`.trim(),
+        user.username || '',
+        user.email || ''
+    ]
+    .filter(Boolean)
+    .map(v => v.toLowerCase());
+}
+
+function isBidFromUser(bid, user) {
+    if (!bid || !user) return false;
+    if (bid.uid && user.id && bid.uid === user.id) return true;
+    const bidName = (bid.user || '').toLowerCase();
+    return getUserAliases(user).includes(bidName);
+}
+
 // ─────────────────────────────────────────────
 // SOUNDS (Synthesized Web Audio Engine)
 // ─────────────────────────────────────────────
@@ -498,7 +516,7 @@ function rmToast(el) {
 // THEME SWITCHER
 // ─────────────────────────────────────────────
 function initTheme() {
-    const saved = localStorage.getItem('mo_theme') || 'dark';
+    const saved = localStorage.getItem('mo_theme') || 'light';
     setTheme(saved);
 }
 
@@ -967,7 +985,8 @@ function placeBid(id) {
     lot.bids.unshift({
         user: myFullName,
         amount: val,
-        ts: Date.now()
+        ts: Date.now(),
+        uid: ME ? ME.id : null
     });
 
     inp.value = '';
@@ -1026,7 +1045,8 @@ function startBotSimulator() {
         lot.bids.unshift({
             user: botName,
             amount: newPrice,
-            ts: Date.now()
+            ts: Date.now(),
+            uid: null
         });
         
         lot.price = newPrice;
@@ -1103,7 +1123,7 @@ function startTicker() {
                         // Check if the current logged-in user won the lot
                         const lastBid = l.bids && l.bids[0];
                         const myFullName = ME ? `${ME.first} ${ME.last}` : 'Siz';
-                        if (lastBid && (lastBid.user === myFullName || lastBid.user === 'Siz')) {
+                        if (lastBid && isBidFromUser(lastBid, ME)) {
                             // Yes, we won!
                             setTimeout(() => {
                                 AudioEngine.playWin();
@@ -1258,7 +1278,7 @@ function openCabinetModal() {
     const wonLots = lots.filter(l => {
         const done = l.timer <= 0;
         const lastBid = l.bids && l.bids[0];
-        return done && lastBid && (lastBid.user === myFullName || lastBid.user === 'Siz');
+        return done && lastBid && isBidFromUser(lastBid, ME);
     });
     
     const spentAmt = wonLots.reduce((sum, l) => sum + l.price, 0);
@@ -1285,7 +1305,7 @@ function renderCabinetTab() {
         const wonLots = lots.filter(l => {
             const done = l.timer <= 0;
             const lastBid = l.bids && l.bids[0];
-            return done && lastBid && (lastBid.user === myFullName || lastBid.user === 'Siz');
+            return done && lastBid && isBidFromUser(lastBid, ME);
         });
 
         if (wonLots.length === 0) {
@@ -1311,7 +1331,7 @@ function renderCabinetTab() {
         const activeBids = lots.filter(l => {
             const active = l.timer > 0;
             const bList = l.bids || [];
-            const hasPlaced = bList.some(b => b.user === myFullName || b.user === 'Siz');
+            const hasPlaced = bList.some(b => isBidFromUser(b, ME));
             return active && hasPlaced;
         });
 
@@ -1564,7 +1584,11 @@ function _renderAdminUsers() {
     tbody.innerHTML = filtered.map(u => {
         const isSelf = ME && u.id === ME.id;
         const uBal = u.bal !== undefined ? u.bal : 2500000;
-        const userBids = lots.reduce((acc, l) => acc + l.bids.filter(b => b.user === u.username).length, 0);
+        const userAliases = getUserAliases(u);
+        const userBids = lots.reduce((acc, l) => acc + (l.bids || []).filter(b => {
+            if (b.uid) return b.uid === u.id;
+            return userAliases.includes((b.user || '').toLowerCase());
+        }).length, 0);
         const created = u.created ? new Date(u.created).toLocaleDateString('uz-UZ') : '—';
         return `
         <tr>
@@ -1810,13 +1834,22 @@ function adminEditBalance(uid) {
     if (idx !== -1) {
         users[idx].bal = amt;
         saveUsers(users);
-        SYNC.postMessage({ type: 'ADMIN_RESET', senderId: ME.id, data: { uid, balance: amt } });
+        if (ME && ME.id === uid) {
+            ME.bal = amt;
+            balance = amt;
+            syncBalanceUI();
+        }
+        SYNC.postMessage({ type: 'ADMIN_RESET', senderId: ME ? ME.id : 'admin', data: { uid, balance: amt } });
         toast(`✅ Foydalanuvchi balansi ${fMoney(amt)} qilib belgilandi!`, 'success');
         renderAdminPanel();
     }
 }
 
 function adminToggleRole(uid) {
+    if (ME && uid === ME.id) {
+        toast("O'zingizning rolni o'zgartira olmaysiz", 'warning');
+        return;
+    }
     const users = getUsers();
     const idx = users.findIndex(u => u.id === uid);
     if (idx !== -1) {
@@ -1828,6 +1861,10 @@ function adminToggleRole(uid) {
 }
 
 function adminDeleteUser(uid) {
+    if (ME && uid === ME.id) {
+        toast("O'zingizni o'chira olmaysiz", 'warning');
+        return;
+    }
     if (!confirm('Bu foydalanuvchini o\'chirishni tasdiqlaysizmi?')) return;
     let users = getUsers();
     const u = users.find(u => u.id === uid);
@@ -2145,22 +2182,41 @@ function initPreview3D(category) {
 
     const handleEnd = () => { isDragging = false; };
 
-    container.addEventListener('mousedown', (e) => handleStart(e.offsetX, e.offsetY));
-    container.addEventListener('mousemove', (e) => handleMove(e.offsetX, e.offsetY));
-    window.addEventListener('mouseup', handleEnd);
+    const handlers = {
+        down: (e) => handleStart(e.offsetX, e.offsetY),
+        move: (e) => handleMove(e.offsetX, e.offsetY),
+        up: handleEnd,
+        touchStart: (e) => {
+            const touch = e.touches[0];
+            const rect = container.getBoundingClientRect();
+            handleStart(touch.clientX - rect.left, touch.clientY - rect.top);
+        },
+        touchMove: (e) => {
+            const touch = e.touches[0];
+            const rect = container.getBoundingClientRect();
+            handleMove(touch.clientX - rect.left, touch.clientY - rect.top);
+        },
+        touchEnd: handleEnd
+    };
+
+    if (container._previewHandlers) {
+        container.removeEventListener('mousedown', container._previewHandlers.down);
+        container.removeEventListener('mousemove', container._previewHandlers.move);
+        container.removeEventListener('touchstart', container._previewHandlers.touchStart);
+        container.removeEventListener('touchmove', container._previewHandlers.touchMove);
+        container.removeEventListener('touchend', container._previewHandlers.touchEnd);
+        window.removeEventListener('mouseup', container._previewHandlers.up);
+    }
+
+    container._previewHandlers = handlers;
+    container.addEventListener('mousedown', handlers.down);
+    container.addEventListener('mousemove', handlers.move);
+    window.addEventListener('mouseup', handlers.up);
 
     // Mobile touch support
-    container.addEventListener('touchstart', (e) => {
-        const touch = e.touches[0];
-        const rect = container.getBoundingClientRect();
-        handleStart(touch.clientX - rect.left, touch.clientY - rect.top);
-    });
-    container.addEventListener('touchmove', (e) => {
-        const touch = e.touches[0];
-        const rect = container.getBoundingClientRect();
-        handleMove(touch.clientX - rect.left, touch.clientY - rect.top);
-    });
-    container.addEventListener('touchend', handleEnd);
+    container.addEventListener('touchstart', handlers.touchStart);
+    container.addEventListener('touchmove', handlers.touchMove);
+    container.addEventListener('touchend', handlers.touchEnd);
 
     function render() {
         previewAnimId = requestAnimationFrame(render);
@@ -2178,6 +2234,23 @@ function close3dPreview() {
     if (previewAnimId) {
         cancelAnimationFrame(previewAnimId);
         previewAnimId = null;
+    }
+    if (previewRenderer) {
+        previewRenderer.dispose();
+        previewRenderer = null;
+    }
+    const container = $('previewCanvas3d');
+    if (container) {
+        container.innerHTML = '';
+        if (container._previewHandlers) {
+            container.removeEventListener('mousedown', container._previewHandlers.down);
+            container.removeEventListener('mousemove', container._previewHandlers.move);
+            container.removeEventListener('touchstart', container._previewHandlers.touchStart);
+            container.removeEventListener('touchmove', container._previewHandlers.touchMove);
+            container.removeEventListener('touchend', container._previewHandlers.touchEnd);
+            window.removeEventListener('mouseup', container._previewHandlers.up);
+            container._previewHandlers = null;
+        }
     }
 }
 
