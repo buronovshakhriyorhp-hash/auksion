@@ -1,10 +1,640 @@
-/**
- * MathOyin | Premium Auction Platform
- * Author : Jamshid Eshpulatov
- * Version: 2.0.0
- *
- * NOTE: Barcha stillar index.html ichidagi <style> blokida joylashgan
- * (TailwindCSS CDN + Vanilla CSS).
- * Bu fayl eski loyihadan qolgan bo'lib, hozir ishlatilmaydi.
- * Kelajakda stillarni ajratish uchun shu joydan foydalanish mumkin.
- */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --bg: #050505;
+    --card-bg: rgba(255,255,255,0.03);
+    --border: rgba(255,255,255,0.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg);
+    color: #fff;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #444; }
+
+/* ── Glass ── */
+.glass {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+/* ── Auth overlay ── */
+#authOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #050505;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 24px 16px;
+}
+
+/* ── Custom input ── */
+.c-input {
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    transition: border-color .3s, box-shadow .3s, background .3s;
+    width: 100%;
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    outline: none;
+}
+.c-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59,130,246,.18);
+}
+.c-input::placeholder { color: rgba(255,255,255,.28); }
+select.c-input option { background: #111; color: #fff; }
+
+/* ── Animations ── */
+@keyframes shake {
+    0%,100%  { transform: translateX(0); }
+    20%,60%  { transform: translateX(-7px); }
+    40%,80%  { transform: translateX(7px); }
+}
+@keyframes fadeUp {
+    from { opacity:0; transform:translateY(18px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+@keyframes toastIn  { from { opacity:0; transform:translateX(110px); } to { opacity:1; transform:translateX(0); } }
+@keyframes toastOut { from { opacity:1; transform:translateX(0); }      to { opacity:0; transform:translateX(110px); } }
+@keyframes pulseDot { 0%,100% { box-shadow:0 0 0 0 rgba(16,185,129,.5); } 50% { box-shadow:0 0 0 8px rgba(16,185,129,0); } }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.shake { animation: shake .4s ease; }
+.fade-up { animation: fadeUp .4s ease both; }
+
+/* ── Auth tabs ── */
+.a-tab {
+    flex: 1;
+    padding: 11px 8px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    border-radius: 11px;
+    cursor: pointer;
+    transition: all .25s;
+    text-align: center;
+}
+.a-tab.on  { background: var(--primary); color: #fff; }
+.a-tab:not(.on) { color: rgba(255,255,255,.35); }
+.a-tab:not(.on):hover { color:#fff; background:rgba(255,255,255,.06); }
+
+/* ── Strength bars ── */
+.s-bar { height: 3px; border-radius: 99px; transition: background .3s; }
+
+/* ── Nav ── */
+nav {
+    position: fixed;
+    top: 0; width: 100%;
+    z-index: 200;
+    padding: 14px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(5,5,5,.88);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(255,255,255,.05);
+    transition: background 0.3s, border-bottom-color 0.3s;
+}
+
+/* ── Mobile drawer ── */
+#mobileMenu {
+    position: fixed;
+    inset: 0;
+    z-index: 190;
+    background: rgba(5,5,5,.97);
+    padding: 100px 36px 40px;
+    transform: translateX(-100%);
+    transition: transform .38s cubic-bezier(.4,0,.2,1), background 0.3s;
+}
+#mobileMenu.open { transform: translateX(0); }
+
+/* ── Hero ── */
+.hero-bg {
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(59,130,246,.22) 0%, transparent 70%);
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ── 3D Canvas Elements ── */
+#heroCanvas3d {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+    pointer-events: auto;
+}
+.hero-content {
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+}
+.hero-content a, .hero-content button {
+    pointer-events: auto;
+}
+
+#previewCanvas3d {
+    width: 100%;
+    height: 280px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 1.5rem;
+    cursor: grab;
+}
+#previewCanvas3d:active { cursor: grabbing; }
+
+body.light #previewCanvas3d {
+    background: rgba(0,0,0,0.02);
+    border-color: rgba(0,0,0,0.06);
+}
+
+/* ── Filter chips ── */
+.chip {
+    padding: 8px 18px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,.1);
+    color: rgba(255,255,255,.45);
+    background: transparent;
+    transition: all .2s;
+}
+.chip:hover { border-color:var(--primary); color:var(--primary); }
+.chip.on { background:var(--primary); border-color:var(--primary); color:#fff; }
+
+/* ── Stat mini-cards ── */
+.s-card {
+    background: rgba(255,255,255,.025);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 18px;
+    padding: 20px;
+    text-align: center;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+/* ── Lot card ── */
+.lot-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 2rem;
+    overflow: hidden;
+    position: relative;
+    transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease, background 0.3s;
+}
+.lot-card:hover {
+    transform: translateY(-7px);
+    border-color: var(--primary) !important;
+    box-shadow: 0 28px 55px rgba(59,130,246,.16);
+}
+.lot-card.ended {
+    opacity: .72;
+}
+.lot-card.ended:hover {
+    border-color: rgba(239,68,68,.5) !important;
+    box-shadow: 0 20px 40px rgba(239,68,68,.1);
+    transform: translateY(-4px);
+}
+.lot-card .lot-img img { transition: transform .9s ease; }
+.lot-card:hover .lot-img img { transform: scale(1.1); }
+
+/* ── Toast ── */
+#toastWrap {
+    position: fixed;
+    top: 90px; right: 16px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 360px;
+    width: calc(100% - 32px);
+}
+.toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 15px;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,.1);
+    cursor: pointer;
+    animation: toastIn .3s ease both;
+}
+.toast.out { animation: toastOut .3s ease forwards; }
+.toast.success { background:rgba(16,185,129,.14); border-color:rgba(16,185,129,.3); }
+.toast.error   { background:rgba(239,68,68,.14);   border-color:rgba(239,68,68,.3); }
+.toast.info    { background:rgba(59,130,246,.14);  border-color:rgba(59,130,246,.3); }
+.toast.warning { background:rgba(245,158,11,.14);  border-color:rgba(245,158,11,.3); }
+
+/* ── Modal ── */
+.m-overlay {
+    position: fixed;
+    inset: 0; z-index: 10000;
+    background: rgba(0,0,0,.82);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s;
+}
+.m-overlay.open { opacity:1; pointer-events:all; }
+.m-box {
+    background: #0c0c0c;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 2.2rem;
+    padding: 2.2rem;
+    width: 100%;
+    max-width: 490px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(22px);
+    transition: transform .3s, background 0.3s, border-color 0.3s;
+}
+.m-overlay.open .m-box { transform: translateY(0); }
+.m-box::-webkit-scrollbar { width: 4px; }
+.m-box::-webkit-scrollbar-thumb { background:#2a2a2a; border-radius:2px; }
+
+/* ── Bid history row ── */
+.bid-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.bid-row:last-child { border-bottom: none; }
+
+/* ── Live dot ── */
+.live-dot {
+    width: 8px; height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    animation: pulseDot 1.6s infinite;
+    display: inline-block;
+}
+
+/* ── Category badge ── */
+.cat-b {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+}
+
+/* ── Skeleton Loading ── */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+.skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 37%, rgba(255,255,255,0.03) 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+}
+body.light .skeleton {
+    background: linear-gradient(90deg, rgba(0,0,0,0.05) 25%, rgba(0,0,0,0.1) 37%, rgba(0,0,0,0.05) 63%);
+    background-size: 400% 100%;
+}
+
+/* ── Admin Panel Styles ── */
+.admin-table-container {
+    overflow-x: auto;
+    margin-top: 1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+body.light .admin-table-container {
+    border-color: rgba(0,0,0,0.05);
+}
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+.admin-table th, .admin-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+body.light .admin-table th, body.light .admin-table td {
+    border-bottom-color: rgba(0,0,0,0.05);
+}
+.admin-table th {
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--primary);
+    background: rgba(255,255,255,0.02);
+}
+body.light .admin-table th {
+    background: rgba(0,0,0,0.01);
+}
+.admin-table td {
+    font-size: 13px;
+}
+
+/* ── Admin Panel Cards ── */
+.adm-panel-card {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 1.2rem;
+    padding: 1.1rem 1.3rem;
+    transition: background 0.3s, border-color 0.3s;
+}
+body.light .adm-panel-card {
+    background: rgba(0,0,0,0.02);
+    border-color: rgba(0,0,0,0.06);
+}
+
+.adm-panel-label {
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--primary);
+}
+
+.adm-setting-text {
+    color: #fff;
+}
+body.light .adm-setting-text {
+    color: #111827;
+}
+
+/* ── Admin Toggle Switch ── */
+.adm-toggle-btn {
+    position: relative;
+    width: 46px;
+    height: 26px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+    flex-shrink: 0;
+}
+.adm-toggle-btn.on {
+    background: var(--primary);
+}
+.adm-toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.3s;
+    display: block;
+}
+.adm-toggle-btn.on .adm-toggle-knob {
+    transform: translateX(20px);
+}
+
+/* ── Admin Stats Mini Card ── */
+.adm-stat-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+    transition: background 0.3s, border-color 0.3s;
+}
+body.light .adm-stat-card {
+    background: rgba(0,0,0,0.02);
+    border-color: rgba(0,0,0,0.06);
+}
+
+/* ── Language button drop ── */
+.lang-select {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    font-weight: 800;
+    font-size: 11px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+}
+.lang-select option {
+    background: #0c0c0c;
+    color: #fff;
+}
+body.light .lang-select {
+    border-color: rgba(0,0,0,0.1);
+    color: #1f2937;
+}
+body.light .lang-select option {
+    background: #ffffff;
+    color: #1f2937;
+}
+
+/* ══════════════════════════════════════
+     LIGHT MODE OVERRIDES
+══════════════════════════════════════ */
+body.light {
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+body.light #authOverlay {
+    background: #f3f4f6;
+}
+
+body.light .glass {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+}
+
+body.light nav {
+    background: rgba(255, 255, 255, 0.8);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light #mobileMenu {
+    background: rgba(255, 255, 255, 0.97);
+}
+
+body.light #mobileMenu a, body.light #mobileMenu button {
+    color: #1f2937;
+}
+body.light #mobileMenu a:hover, body.light #mobileMenu button:hover {
+    color: #3b82f6;
+}
+
+body.light .hero-bg {
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(59,130,246,0.1) 0%, transparent 70%);
+}
+
+body.light .chip {
+    border-color: rgba(0,0,0,0.1);
+    color: rgba(0,0,0,0.6);
+}
+body.light .chip:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+body.light .chip.on {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+body.light .s-card {
+    background: rgba(0,0,0,0.02);
+    border-color: rgba(0,0,0,0.06);
+}
+
+body.light .c-input {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #111827;
+}
+body.light .c-input::placeholder {
+    color: rgba(0, 0, 0, 0.35);
+}
+body.light select.c-input option {
+    background: #fff;
+    color: #111827;
+}
+
+body.light .lot-card {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+}
+body.light .lot-card:hover {
+    box-shadow: 0 28px 55px rgba(59, 130, 246, 0.08);
+}
+
+body.light .m-box {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #1f2937;
+}
+body.light .m-box::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+}
+
+body.light .bid-row {
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+body.light .toast {
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ── Light Mode: Text overrides ── */
+body.light .text-white    { color: #111827 !important; }
+body.light .text-gray-400 { color: #4b5563 !important; }
+body.light .text-gray-500 { color: #6b7280 !important; }
+body.light .text-gray-600 { color: #374151 !important; }
+
+/* ── Light Mode: Background overrides ── */
+body.light .bg-neutral-950  { background-color: #f9fafb !important; }
+body.light .bg-white\/5     { background-color: rgba(0, 0, 0, 0.04) !important; }
+body.light .bg-white\/10    { background-color: rgba(0, 0, 0, 0.08) !important; }
+body.light .bg-black\/70    { background-color: rgba(255, 255, 255, 0.8) !important; }
+
+/* ── Light Mode: Border overrides ── */
+body.light .border-white\/5  { border-color: rgba(0, 0, 0, 0.05) !important; }
+body.light .border-white\/10 { border-color: rgba(0, 0, 0, 0.1) !important; }
+body.light .border-white\/15 { border-color: rgba(0, 0, 0, 0.15) !important; }
+
+body.light .accent-blue-500 { accent-color: #3b82f6; }
+body.light footer hr        { border-color: rgba(0,0,0,0.06) !important; }
+
+/* ── Light Mode: Keep active/special elements readable ── */
+body.light .toast .text-white        { color: #111827 !important; }
+body.light .a-tab.on                 { color: #ffffff !important; }
+body.light .cat-b.text-orange-400    { color: #ea580c !important; }
+body.light .cat-b.text-blue-400      { color: #2563eb !important; }
+body.light .cat-b.text-purple-400    { color: #7c3aed !important; }
+body.light .cat-b.text-cyan-400      { color: #0891b2 !important; }
+body.light .cat-b.text-yellow-400    { color: #ca8a04 !important; }
+body.light button.bg-blue-600,
+body.light a.bg-blue-600,
+body.light button.bg-green-600       { color: #ffffff !important; }
+body.light button.bg-blue-600 i,
+body.light a.bg-blue-600 i,
+body.light button.bg-green-600 i     { color: #ffffff !important; }
+body.light #navAvatar                { color: #ffffff !important; }
+
+/* ── Light Mode: Modal headings & titles ── */
+body.light .m-box h3,
+body.light .m-box h4,
+body.light .m-box h5                 { color: #111827; }
+body.light .m-box label              { color: #374151 !important; }
+
+/* ── Light Mode: Admin table rows ── */
+body.light .admin-table td           { color: #1f2937; }
+body.light .admin-table .font-bold   { color: #111827 !important; }
+
+/* ── Light Mode: Bid row text ── */
+body.light .bid-row span,
+body.light .bid-row p                { color: #1f2937; }
+
+/* ── Light Mode: Cabinet modal ── */
+body.light #cabName                  { color: #111827 !important; }
+body.light #cabUsername              { color: #6b7280 !important; }
+
+/* ── Light Mode: Hero section ── */
+body.light .hero-content h1          { color: #111827; }
+body.light .hero-content p           { color: #4b5563 !important; }
+
+/* ── Light Mode: Navbar balance ── */
+body.light #navBalance               { color: #111827 !important; }
+
+/* ── Light Mode: Lot card text ── */
+body.light .lot-card .text-white     { color: #111827 !important; }
+
+/* ── Light Mode: Admin toggle off ── */
+body.light .adm-toggle-btn:not(.on)  { background: rgba(0,0,0,0.12); }
+
+/* ── Light Mode: Section headings in main ── */
+body.light main h2                   { color: #111827; }
+body.light main p                    { color: #4b5563; }
+body.light .s-card div:last-child    { color: #6b7280 !important; }
+
+/* ── Light Mode: Footer ── */
+body.light footer                    { background-color: #f9fafb; }
+body.light footer h3,
+body.light footer p                  { color: #374151 !important; }
+body.light footer a span:last-child  { color: #111827 !important; }

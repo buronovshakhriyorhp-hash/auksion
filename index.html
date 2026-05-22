@@ -3,290 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathOyin | Premium Auction Platform</title>
+    <title id="pageTitle">MathOyin | Premium Auction Platform</title>
     <meta name="description" content="MathOyin — zamonaviy onlayn auktsion platformasi. Real vaqt rejimida lotlar, shaffof narx belgilash tizimi. Jamshid Eshpulatov tomonidan yaratilgan.">
+    
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap');
-
-        :root {
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --bg: #050505;
-            --card-bg: rgba(255,255,255,0.03);
-            --border: rgba(255,255,255,0.08);
-        }
-
-        *, *::before, *::after { box-sizing: border-box; }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg);
-            color: #fff;
-            scroll-behavior: smooth;
-            overflow-x: hidden;
-        }
-
-        /* ── Scrollbar ── */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; }
-        ::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #444; }
-
-        /* ── Glass ── */
-        .glass {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-        }
-
-        /* ── Auth overlay ── */
-        #authOverlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: #050505;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-y: auto;
-            padding: 24px 16px;
-        }
-
-        /* ── Custom input ── */
-        .c-input {
-            background: rgba(0,0,0,0.55);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #fff;
-            transition: border-color .3s, box-shadow .3s;
-            width: 100%;
-            border-radius: 14px;
-            padding: 14px 18px;
-            font-size: 14px;
-            font-weight: 600;
-            outline: none;
-        }
-        .c-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59,130,246,.18);
-        }
-        .c-input::placeholder { color: rgba(255,255,255,.28); }
-        select.c-input option { background: #111; color: #fff; }
-
-        /* ── Animations ── */
-        @keyframes shake {
-            0%,100%  { transform: translateX(0); }
-            20%,60%  { transform: translateX(-7px); }
-            40%,80%  { transform: translateX(7px); }
-        }
-        @keyframes fadeUp {
-            from { opacity:0; transform:translateY(18px); }
-            to   { opacity:1; transform:translateY(0); }
-        }
-        @keyframes toastIn  { from { opacity:0; transform:translateX(110px); } to { opacity:1; transform:translateX(0); } }
-        @keyframes toastOut { from { opacity:1; transform:translateX(0); }      to { opacity:0; transform:translateX(110px); } }
-        @keyframes pulseDot { 0%,100% { box-shadow:0 0 0 0 rgba(16,185,129,.5); } 50% { box-shadow:0 0 0 8px rgba(16,185,129,0); } }
-        @keyframes spin { to { transform:rotate(360deg); } }
-
-        .shake { animation: shake .4s ease; }
-        .fade-up { animation: fadeUp .4s ease both; }
-
-        /* ── Auth tabs ── */
-        .a-tab {
-            flex: 1;
-            padding: 11px 8px;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: .14em;
-            text-transform: uppercase;
-            border-radius: 11px;
-            cursor: pointer;
-            transition: all .25s;
-            text-align: center;
-        }
-        .a-tab.on  { background: var(--primary); color: #fff; }
-        .a-tab:not(.on) { color: rgba(255,255,255,.35); }
-        .a-tab:not(.on):hover { color:#fff; background:rgba(255,255,255,.06); }
-
-        /* ── Strength bars ── */
-        .s-bar { height: 3px; border-radius: 99px; transition: background .3s; }
-
-        /* ── Nav ── */
-        nav {
-            position: fixed;
-            top: 0; width: 100%;
-            z-index: 200;
-            padding: 14px 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(5,5,5,.88);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid rgba(255,255,255,.05);
-        }
-
-        /* ── Mobile drawer ── */
-        #mobileMenu {
-            position: fixed;
-            inset: 0;
-            z-index: 190;
-            background: rgba(5,5,5,.97);
-            padding: 100px 36px 40px;
-            transform: translateX(-100%);
-            transition: transform .38s cubic-bezier(.4,0,.2,1);
-        }
-        #mobileMenu.open { transform: translateX(0); }
-
-        /* ── Hero ── */
-        .hero-bg {
-            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(59,130,246,.22) 0%, transparent 70%);
-        }
-
-        /* ── Filter chips ── */
-        .chip {
-            padding: 8px 18px;
-            border-radius: 99px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            cursor: pointer;
-            border: 1px solid rgba(255,255,255,.1);
-            color: rgba(255,255,255,.45);
-            background: transparent;
-            transition: all .2s;
-        }
-        .chip:hover { border-color:var(--primary); color:var(--primary); }
-        .chip.on { background:var(--primary); border-color:var(--primary); color:#fff; }
-
-        /* ── Stat mini-cards ── */
-        .s-card {
-            background: rgba(255,255,255,.025);
-            border: 1px solid rgba(255,255,255,.06);
-            border-radius: 18px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        /* ── Lot card ── */
-        .lot-card {
-            display: flex;
-            flex-direction: column;
-            border-radius: 2rem;
-            overflow: hidden;
-            position: relative;
-            transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
-        }
-        .lot-card:hover {
-            transform: translateY(-7px);
-            border-color: var(--primary) !important;
-            box-shadow: 0 28px 55px rgba(59,130,246,.16);
-        }
-        .lot-card.ended {
-            opacity: .72;
-        }
-        .lot-card.ended:hover {
-            border-color: rgba(239,68,68,.5) !important;
-            box-shadow: 0 20px 40px rgba(239,68,68,.1);
-            transform: translateY(-4px);
-        }
-        .lot-card .lot-img img { transition: transform .9s ease; }
-        .lot-card:hover .lot-img img { transform: scale(1.1); }
-
-        /* ── Toast ── */
-        #toastWrap {
-            position: fixed;
-            top: 90px; right: 16px;
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 360px;
-            width: calc(100% - 32px);
-        }
-        .toast {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 14px 18px;
-            border-radius: 15px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,.1);
-            cursor: pointer;
-            animation: toastIn .3s ease both;
-        }
-        .toast.out { animation: toastOut .3s ease forwards; }
-        .toast.success { background:rgba(16,185,129,.14); border-color:rgba(16,185,129,.3); }
-        .toast.error   { background:rgba(239,68,68,.14);   border-color:rgba(239,68,68,.3); }
-        .toast.info    { background:rgba(59,130,246,.14);  border-color:rgba(59,130,246,.3); }
-        .toast.warning { background:rgba(245,158,11,.14);  border-color:rgba(245,158,11,.3); }
-
-        /* ── Modal ── */
-        .m-overlay {
-            position: fixed;
-            inset: 0; z-index: 10000;
-            background: rgba(0,0,0,.82);
-            backdrop-filter: blur(12px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .3s;
-        }
-        .m-overlay.open { opacity:1; pointer-events:all; }
-        .m-box {
-            background: #0c0c0c;
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 2.2rem;
-            padding: 2.2rem;
-            width: 100%;
-            max-width: 490px;
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: translateY(22px);
-            transition: transform .3s;
-        }
-        .m-overlay.open .m-box { transform: translateY(0); }
-        .m-box::-webkit-scrollbar { width: 4px; }
-        .m-box::-webkit-scrollbar-thumb { background:#2a2a2a; border-radius:2px; }
-
-        /* ── Bid history row ── */
-        .bid-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,.05);
-        }
-        .bid-row:last-child { border-bottom: none; }
-
-        /* ── Live dot ── */
-        .live-dot {
-            width: 8px; height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pulseDot 1.6s infinite;
-            display: inline-block;
-        }
-
-        /* ── Category badge ── */
-        .cat-b {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
-            border-radius: 99px;
-            font-size: 9px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: .1em;
-        }
-    </style>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <!-- Three.js CDN for procedural 3D elements -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- AOS (Animate On Scroll) CSS & JS CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -295,7 +28,8 @@
 
 <!-- ══════════════════════════════════════
      AUTH OVERLAY  (Login + Register)
-══════════════════════════════════════ -->
+     Bypassed dynamically if session is active
+ ══════════════════════════════════════ -->
 <div id="authOverlay">
     <div id="authBox" class="glass p-9 rounded-[2.4rem] w-full max-w-md text-center shadow-2xl shadow-blue-600/10 my-auto">
 
@@ -341,7 +75,7 @@
                 </div>
 
                 <button onclick="checkAuth()" id="btnLogin"
-                        class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[.2em] transition-all shadow-lg shadow-blue-600/30 mt-1 flex items-center justify-center gap-2">
+                        class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[.2em] transition-all shadow-lg shadow-blue-600/30 mt-1 flex items-center justify-center gap-2 text-white">
                     <i class="fas fa-sign-in-alt"></i> Tizimga Kirish
                 </button>
             </div>
@@ -357,7 +91,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5">Ism</label>
-                        <input id="rg_first" type="text" placeholder="Isming"
+                        <input id="rg_first" type="text" placeholder="Ismingiz"
                                class="c-input"
                                onkeydown="if(event.key==='Enter')doRegister()">
                     </div>
@@ -423,13 +157,13 @@
 
                 <div class="flex items-start gap-3 pt-1">
                     <input type="checkbox" id="rg_agree" class="mt-0.5 accent-blue-500 w-4 h-4 flex-shrink-0">
-                    <label for="rg_agree" class="text-xs text-gray-500 leading-relaxed cursor-pointer">
+                    <label for="rg_agree" class="text-xs text-gray-500 leading-relaxed cursor-pointer select-none">
                         <span class="text-blue-500 hover:underline">Foydalanish shartlari</span> bilan roziman va platformadan faqat qonuniy maqsadlarda foydalanaman.
                     </label>
                 </div>
 
                 <button onclick="doRegister()" id="btnRegister"
-                        class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[.2em] transition-all shadow-lg shadow-blue-600/30 mt-1 flex items-center justify-center gap-2">
+                        class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[.2em] transition-all shadow-lg shadow-blue-600/30 mt-1 flex items-center justify-center gap-2 text-white">
                     <i class="fas fa-user-plus"></i> Hisob Yaratish
                 </button>
             </div>
@@ -442,32 +176,43 @@
 </div>
 
 <!-- ══════════════════════════════════════
-     MOBILE SIDE MENU
-══════════════════════════════════════ -->
+     MOBILE SIDE DRAWER MENU
+ ══════════════════════════════════════ -->
 <div id="mobileMenu">
     <div class="space-y-6">
+        <!-- Admin Panel trigger in mobile (shown only to admin) -->
+        <button id="adminBtnMob" onclick="openModal('mAdmin');closeMobMenu();" class="hidden w-full text-left text-3xl font-black uppercase italic tracking-tight text-red-500 hover:text-red-400 transition">
+            <i class="fas fa-user-shield text-red-600 mr-3"></i><span data-i18n="adminTitle">Admin Paneli</span>
+        </button>
+        <!-- Cabinet trigger -->
+        <button onclick="openCabinetModal();closeMobMenu();" class="block w-full text-left text-3xl font-black uppercase italic tracking-tight hover:text-blue-500 transition">
+            <i class="fas fa-user text-blue-600 mr-3"></i><span data-i18n="shaxsiyKabinet">Shaxsiy Kabinet</span>
+        </button>
         <a href="#explore" onclick="closeMobMenu()" class="block text-3xl font-black uppercase italic tracking-tight hover:text-blue-500 transition">
-            <i class="fas fa-gavel text-blue-600 mr-3"></i>Lotlar
+            <i class="fas fa-gavel text-blue-600 mr-3"></i><span data-i18n="jonliLotlar">Lotlar</span>
         </a>
         <button onclick="openModal('mStats');closeMobMenu();" class="block w-full text-left text-3xl font-black uppercase italic tracking-tight hover:text-blue-500 transition">
-            <i class="fas fa-chart-bar text-blue-600 mr-3"></i>Statistika
+            <i class="fas fa-chart-bar text-blue-600 mr-3"></i><span data-i18n="statistika">Statistika</span>
         </button>
         <button onclick="openModal('mAddLot');closeMobMenu();" class="block w-full text-left text-3xl font-black uppercase italic tracking-tight hover:text-blue-500 transition">
-            <i class="fas fa-plus-circle text-blue-600 mr-3"></i>Lot Qo'shish
+            <i class="fas fa-plus-circle text-blue-600 mr-3"></i><span data-i18n="lotQoshish">Lot Qo'shish</span>
         </button>
         <button onclick="openModal('mBalance');closeMobMenu();" class="block w-full text-left text-3xl font-black uppercase italic tracking-tight hover:text-blue-500 transition">
-            <i class="fas fa-wallet text-blue-600 mr-3"></i>Balans To'ldirish
+            <i class="fas fa-wallet text-blue-600 mr-3"></i><span data-i18n="balansToldirish">Balans To'ldirish</span>
+        </button>
+        <button id="themeToggleBtnMob" onclick="toggleTheme();closeMobMenu();" class="block w-full text-left text-3xl font-black uppercase italic tracking-tight hover:text-blue-500 transition">
+            <i class="fas fa-sun text-yellow-500 mr-3"></i><span data-i18n="kunRejimi">Kun Rejimi</span>
         </button>
         <hr class="border-white/10">
         <button onclick="logout()" class="text-red-500 text-2xl font-black uppercase italic flex items-center gap-3 hover:text-red-400 transition">
-            <i class="fas fa-sign-out-alt"></i> Chiqish
+            <i class="fas fa-sign-out-alt"></i> <span data-i18n="chiqish">Chiqish</span>
         </button>
     </div>
 </div>
 
 <!-- ══════════════════════════════════════
-     MAIN APP
-══════════════════════════════════════ -->
+     MAIN APPLICATION CONTAINER
+ ══════════════════════════════════════ -->
 <div id="mainApp" style="display:none;">
 
     <!-- ─── NAVBAR ─── -->
@@ -482,35 +227,55 @@
             </div>
         </div>
 
-        <!-- Desktop actions -->
+        <!-- Desktop Navigation Items -->
         <div class="hidden md:flex items-center gap-2">
+            <button id="adminBtn" onclick="openModal('mAdmin')"
+                    class="hidden px-4 py-2.5 rounded-xl border border-red-500/30 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition">
+                <i class="fas fa-user-shield mr-1.5"></i><span data-i18n="adminTitle">Admin Paneli</span>
+            </button>
             <button onclick="openModal('mStats')"
                     class="px-4 py-2.5 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:border-white/25 transition">
-                <i class="fas fa-chart-bar mr-1.5"></i>Statistika
+                <i class="fas fa-chart-bar mr-1.5"></i><span data-i18n="statistika">Statistika</span>
             </button>
             <button onclick="openModal('mAddLot')"
                     class="px-4 py-2.5 rounded-xl border border-blue-500/30 text-[10px] font-black uppercase tracking-widest text-blue-400 hover:bg-blue-500/10 transition">
-                <i class="fas fa-plus mr-1.5"></i>Lot Qo'shish
+                <i class="fas fa-plus mr-1.5"></i><span data-i18n="lotQoshish">Lot Qo'shish</span>
             </button>
         </div>
 
         <div class="flex items-center gap-2">
+            <!-- Language Selector -->
+            <select id="langSelect" onchange="changeLang(this.value)" class="lang-select mr-1">
+                <option value="uz">UZ</option>
+                <option value="ru">RU</option>
+                <option value="en">EN</option>
+            </select>
+            
+            <!-- Theme Toggle Button -->
+            <button id="themeToggleBtn" onclick="toggleTheme()" title="Rejimni almashtirish"
+                    class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition">
+                <i class="fas fa-sun text-lg text-yellow-400"></i>
+            </button>
+            
             <!-- Balance button -->
             <button onclick="openModal('mBalance')"
                     class="bg-blue-600/10 border border-blue-500/20 px-4 py-2 rounded-xl hover:bg-blue-600/20 transition text-left">
-                <span class="text-[9px] block text-blue-500 font-black uppercase tracking-widest">Balance</span>
+                <span class="text-[9px] block text-blue-500 font-black uppercase tracking-widest" data-i18n="balans">Balance</span>
                 <span id="navBalance" class="text-[17px] font-black tracking-tighter font-mono">$2,500,000</span>
             </button>
-            <!-- User avatar -->
-            <div id="navAvatar"
-                 class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-[13px] font-black cursor-default select-none"
-                 title=""></div>
+            
+            <!-- User avatar (now opens cabinet instead of profile settings directly) -->
+            <div id="navAvatar" onclick="openCabinetModal()"
+                 class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-[13px] font-black cursor-pointer select-none text-white hover:scale-105 active:scale-95 transition"
+                 title="Shaxsiy Kabinet"></div>
+                 
             <!-- Logout -->
             <button onclick="logout()" title="Chiqish"
                     class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-red-500/10 hover:border-red-500/40 transition">
                 <i class="fas fa-power-off text-gray-400 text-sm"></i>
             </button>
-            <!-- Hamburger (mobile) -->
+            
+            <!-- Hamburger (mobile toggle) -->
             <button onclick="toggleMobMenu()" id="burgerBtn"
                     class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center md:hidden transition hover:border-white/30">
                 <i class="fas fa-bars text-gray-400 text-sm" id="burgerIco"></i>
@@ -519,26 +284,30 @@
     </nav>
 
     <!-- ─── HERO ─── -->
-    <section class="hero-bg flex items-center justify-center text-center" style="min-height:68vh;padding-top:90px;">
-        <div class="px-6 max-w-3xl mx-auto">
+    <section class="hero-bg flex items-center justify-center text-center relative overflow-hidden" style="min-height:68vh;padding-top:90px;">
+        <!-- Three.js Canvas Element for animated 3D Crystal background -->
+        <canvas id="heroCanvas3d"></canvas>
+        
+        <!-- Hero content wrapped nicely above Three.js with full user interaction -->
+        <div class="px-6 max-w-3xl mx-auto hero-content" data-aos="fade-up" data-aos-duration="1000">
             <div class="flex items-center justify-center gap-2 mb-5">
                 <span class="live-dot"></span>
-                <span class="text-green-400 text-[10px] font-black uppercase tracking-[.45em]">Jonli Auktsion Faol</span>
+                <span class="text-green-400 text-[10px] font-black uppercase tracking-[.45em]" data-i18n="activeAuksion">Jonli Auktsion Faol</span>
             </div>
-            <h1 class="text-6xl md:text-8xl font-black mb-4 leading-none tracking-tighter uppercase italic">
-                SALOM,<br><span id="heroName" class="text-blue-500">FOYDALANUVCHI!</span>
+            <h1 class="text-6xl md:text-8xl font-black mb-4 leading-none tracking-tighter uppercase italic text-white">
+                <span data-i18n="salom">SALOM</span>,<br><span id="heroName" class="text-blue-500">FOYDALANUVCHI!</span>
             </h1>
-            <p class="text-gray-400 mb-10 max-w-xl mx-auto font-medium text-base italic tracking-wide">
+            <p class="text-gray-400 mb-10 max-w-xl mx-auto font-medium text-base italic tracking-wide" id="heroSubtitle">
                 Shaxsiy MathOyin auksion panelingizga xush kelibsiz. Real vaqt rejimida lotlarni kuzating va eng yaxshi narxni belgilang.
             </p>
             <div class="flex flex-wrap justify-center gap-4">
                 <a href="#explore"
-                   class="bg-blue-600 hover:bg-blue-500 px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-[.2em] transition shadow-2xl shadow-blue-600/40 hover:scale-105">
-                    <i class="fas fa-gavel mr-2"></i>Savdolarni Boshlash
+                   class="bg-blue-600 hover:bg-blue-500 px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-[.2em] transition shadow-2xl shadow-blue-600/40 hover:scale-105 text-white flex items-center justify-center gap-2">
+                    <i class="fas fa-gavel mr-2"></i><span data-i18n="savdolarniBoshlash">Savdolarni Boshlash</span>
                 </a>
                 <button onclick="openModal('mStats')"
                         class="border border-white/15 hover:border-blue-500/50 px-10 py-5 rounded-2xl font-black text-[11px] uppercase tracking-[.2em] transition hover:bg-blue-500/5">
-                    <i class="fas fa-chart-pie mr-2"></i>Statistika
+                    <i class="fas fa-chart-pie mr-2"></i><span data-i18n="statistika">Statistika</span>
                 </button>
             </div>
         </div>
@@ -548,65 +317,67 @@
     <main id="explore" class="py-20 container mx-auto px-4 md:px-8 max-w-screen-2xl">
 
         <!-- Section header -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-5 mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-5 mb-8" data-aos="fade-right">
             <div>
-                <h2 class="text-4xl font-black uppercase italic leading-none mb-2">Jonli <span class="text-blue-500">Lotlar</span></h2>
+                <h2 class="text-4xl font-black uppercase italic leading-none mb-2"><span data-i18n="jonliLotlar">Jonli Lotlar</span></h2>
                 <div class="flex items-center gap-2">
                     <span class="live-dot"></span>
-                    <p class="text-gray-500 text-[11px] font-bold uppercase tracking-widest">Haqiqiy vaqt rejimida yangilanmoqda</p>
+                    <p class="text-gray-500 text-[11px] font-bold uppercase tracking-widest" data-i18n="realvaqt">Haqiqiy vaqt rejimida yangilanmoqda</p>
                 </div>
             </div>
             <div class="flex flex-wrap items-center gap-3">
                 <!-- Search -->
                 <div class="relative">
                     <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none"></i>
-                    <input id="searchBox" type="text" placeholder="Lot qidirish..."
+                    <input id="searchBox" type="text" placeholder="Lot qidirish..." data-i18n-placeholder="lotQidirish"
                            class="c-input pl-11 py-3 rounded-xl text-sm w-52"
                            oninput="filterRender()">
                 </div>
-                <!-- Mobile add -->
+                <!-- Mobile add button -->
                 <button onclick="openModal('mAddLot')"
                         class="md:hidden px-4 py-3 rounded-xl border border-blue-500/30 text-[10px] font-black uppercase tracking-widest text-blue-400 hover:bg-blue-500/10 transition">
-                    <i class="fas fa-plus mr-1"></i>Lot
+                    <i class="fas fa-plus mr-1"></i><span data-i18n="yangiLot">Lot</span>
                 </button>
             </div>
         </div>
 
         <!-- Category chips -->
-        <div class="flex flex-wrap gap-2 mb-8" id="catChips">
-            <button class="chip on" onclick="setCat('all',this)">Barchasi</button>
-            <button class="chip"     onclick="setCat('transport',this)"><i class="fas fa-car mr-1"></i>Transport</button>
-            <button class="chip"     onclick="setCat('realestate',this)"><i class="fas fa-building mr-1"></i>Ko'chmas Mulk</button>
-            <button class="chip"     onclick="setCat('art',this)"><i class="fas fa-palette mr-1"></i>San'at</button>
-            <button class="chip"     onclick="setCat('tech',this)"><i class="fas fa-microchip mr-1"></i>Texnologiya</button>
-            <button class="chip"     onclick="setCat('jewelry',this)"><i class="fas fa-gem mr-1"></i>Zargarlik</button>
+        <div class="flex flex-wrap gap-2 mb-8" id="catChips" data-aos="fade-left">
+            <button class="chip on" onclick="setCat('all',this)" data-i18n="barchasi">Barchasi</button>
+            <button class="chip"     onclick="setCat('transport',this)"><i class="fas fa-car mr-1"></i><span data-i18n="transport">Transport</span></button>
+            <button class="chip"     onclick="setCat('realestate',this)"><i class="fas fa-building mr-1"></i><span data-i18n="realestate">Ko'chmas Mulk</span></button>
+            <button class="chip"     onclick="setCat('art',this)"><i class="fas fa-palette mr-1"></i><span data-i18n="art">San'at</span></button>
+            <button class="chip"     onclick="setCat('tech',this)"><i class="fas fa-microchip mr-1"></i><span data-i18n="tech">Texnologiya</span></button>
+            <button class="chip"     onclick="setCat('jewelry',this)"><i class="fas fa-gem mr-1"></i><span data-i18n="jewelry">Zargarlik</span></button>
         </div>
 
         <!-- Mini stats bar -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10" data-aos="fade-up" data-aos-delay="200">
             <div class="s-card">
                 <div class="text-3xl font-black text-blue-500 font-mono" id="stActive">0</div>
-                <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Faol Lotlar</div>
+                <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1" data-i18n="faolLotlar">Faol Lotlar</div>
             </div>
             <div class="s-card">
                 <div class="text-3xl font-black text-green-500 font-mono" id="stBids">0</div>
-                <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Jami Takliflar</div>
+                <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1" data-i18n="jamiTakliflar">Jami Takliflar</div>
             </div>
             <div class="s-card">
                 <div class="text-2xl font-black text-yellow-500 font-mono truncate" id="stTop">—</div>
-                <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Eng Qimmat</div>
+                <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1" data-i18n="engQimmat">Eng Qimmat</div>
             </div>
             <div class="s-card">
                 <div class="text-3xl font-black text-red-500 font-mono" id="stDone">0</div>
-                <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Yakunlangan</div>
+                <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1" data-i18n="yakunlangan">Yakunlangan</div>
             </div>
         </div>
 
         <!-- Lot grid -->
         <div id="lotGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+        
+        <!-- Empty Results Message -->
         <div id="emptyMsg" class="hidden text-center py-24">
             <i class="fas fa-search text-5xl text-gray-700 mb-4"></i>
-            <p class="text-gray-600 font-bold uppercase text-sm tracking-widest">Lotlar topilmadi</p>
+            <p class="text-gray-600 font-bold uppercase text-sm tracking-widest" data-i18n="noLots">Lotlar topilmadi</p>
         </div>
     </main>
 
@@ -641,7 +412,7 @@
                 </a>
             </div>
             <div class="opacity-40">
-                <h3 class="text-xl font-black italic tracking-tighter mb-1">JAMSHID ESHPULATOV</h3>
+                <h3 class="text-xl font-black italic tracking-tighter mb-1 text-white">JAMSHID ESHPULATOV</h3>
                 <p class="text-[9px] uppercase tracking-[.4em] font-bold">Elite Developer & Software Architect</p>
             </div>
         </div>
@@ -649,14 +420,14 @@
 </div>
 
 <!-- ══════════════════════════════════════
-     MODALS
-══════════════════════════════════════ -->
+     MODALS SECTION
+ ══════════════════════════════════════ -->
 
 <!-- Stats Modal -->
 <div class="m-overlay" id="mStats" onclick="if(event.target===this)closeModal('mStats')">
     <div class="m-box">
         <div class="flex justify-between items-center mb-7">
-            <h3 class="text-2xl font-black uppercase italic">Statistika <span class="text-blue-500">Paneli</span></h3>
+            <h3 class="text-2xl font-black uppercase italic" id="statTitleText">Statistika <span class="text-blue-500">Paneli</span></h3>
             <button onclick="closeModal('mStats')" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-red-500/10 hover:border-red-500/30 transition">
                 <i class="fas fa-times text-gray-400"></i>
             </button>
@@ -670,7 +441,7 @@
     <div class="m-box">
         <div class="flex justify-between items-center mb-7">
             <div>
-                <h3 class="text-xl font-black uppercase italic">Taklif <span class="text-blue-500">Tarixi</span></h3>
+                <h3 class="text-xl font-black uppercase italic" id="histTitleText">Taklif <span class="text-blue-500">Tarixi</span></h3>
                 <p id="histSubtitle" class="text-gray-500 text-xs mt-0.5"></p>
             </div>
             <button onclick="closeModal('mHistory')" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-red-500/10 hover:border-red-500/30 transition">
@@ -685,28 +456,28 @@
 <div class="m-overlay" id="mAddLot" onclick="if(event.target===this)closeModal('mAddLot')">
     <div class="m-box">
         <div class="flex justify-between items-center mb-7">
-            <h3 class="text-2xl font-black uppercase italic">Yangi <span class="text-blue-500">Lot</span></h3>
+            <h3 class="text-2xl font-black uppercase italic"><span data-i18n="yangiLot">Yangi Lot</span></h3>
             <button onclick="closeModal('mAddLot')" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-red-500/10 hover:border-red-500/30 transition">
                 <i class="fas fa-times text-gray-400"></i>
             </button>
         </div>
-        <div class="space-y-4">
+        <div class="space-y-4 text-left">
             <div>
-                <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5">Lot Nomi *</label>
+                <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5" data-i18n="lotNomi">Lot Nomi *</label>
                 <input id="nl_name" type="text" placeholder="Lot nomini kiriting" class="c-input">
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5">Boshlang'ich narx ($) *</label>
+                    <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5" data-i18n="boshNarx">Boshlang'ich narx ($) *</label>
                     <input id="nl_price" type="number" placeholder="50000" class="c-input">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5">Davomiyligi (soat)</label>
+                    <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5" data-i18n="davomSoat">Davomiyligi (soat)</label>
                     <input id="nl_hours" type="number" placeholder="24" min="1" max="720" class="c-input">
                 </div>
             </div>
             <div>
-                <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5">Kategoriya</label>
+                <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5" data-i18n="kategoriya">Kategoriya</label>
                 <select id="nl_cat" class="c-input">
                     <option value="transport">🚗 Transport</option>
                     <option value="realestate">🏢 Ko'chmas Mulk</option>
@@ -716,16 +487,16 @@
                 </select>
             </div>
             <div>
-                <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5">Rasm URL (ixtiyoriy)</label>
+                <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5" data-i18n="rasmUrl">Rasm URL (ixtiyoriy)</label>
                 <input id="nl_img" type="url" placeholder="https://..." class="c-input">
             </div>
             <div>
-                <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5">Tavsif</label>
+                <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5" data-i18n="tavsif">Tavsif</label>
                 <textarea id="nl_desc" placeholder="Lot haqida qisqacha..." rows="3" class="c-input resize-none"></textarea>
             </div>
             <button onclick="addLot()"
-                    class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[.2em] transition shadow-lg shadow-blue-600/30 mt-1 flex items-center justify-center gap-2">
-                <i class="fas fa-plus"></i> Lot Qo'shish
+                    class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[.2em] transition shadow-lg shadow-blue-600/30 mt-1 flex items-center justify-center gap-2 text-white">
+                <i class="fas fa-plus"></i> <span data-i18n="lotQoshish">Lot Qo'shish</span>
             </button>
         </div>
     </div>
@@ -735,696 +506,315 @@
 <div class="m-overlay" id="mBalance" onclick="if(event.target===this)closeModal('mBalance')">
     <div class="m-box">
         <div class="flex justify-between items-center mb-7">
-            <h3 class="text-2xl font-black uppercase italic">Balans <span class="text-blue-500">To'ldirish</span></h3>
+            <h3 class="text-2xl font-black uppercase italic"><span data-i18n="hisobToldirishTitle">Balans To'ldirish</span></h3>
             <button onclick="closeModal('mBalance')" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-red-500/10 hover:border-red-500/30 transition">
                 <i class="fas fa-times text-gray-400"></i>
             </button>
         </div>
         <div class="text-center mb-8">
-            <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Joriy Balans</p>
+            <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1" data-i18n="joriyBalans">Joriy Balans</p>
             <p id="balDisplay" class="text-4xl font-black text-blue-500 font-mono">$2,500,000</p>
         </div>
-        <div class="space-y-4">
+        <div class="space-y-4 text-left">
             <div class="grid grid-cols-3 gap-3">
                 <button onclick="quickBal(100000)"  class="py-3.5 rounded-xl border border-white/10 text-sm font-black hover:border-blue-500 hover:text-blue-400 transition">$100K</button>
                 <button onclick="quickBal(500000)"  class="py-3.5 rounded-xl border border-white/10 text-sm font-black hover:border-blue-500 hover:text-blue-400 transition">$500K</button>
                 <button onclick="quickBal(1000000)" class="py-3.5 rounded-xl border border-white/10 text-sm font-black hover:border-blue-500 hover:text-blue-400 transition">$1M</button>
             </div>
             <div>
-                <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5">Maxsus miqdor ($)</label>
+                <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5" data-i18n="maxsusMiqdor">Maxsus miqdor ($)</label>
                 <input id="balAmt" type="number" placeholder="Miqdorni kiriting" class="c-input"
                        onkeydown="if(event.key==='Enter')addBalance()">
             </div>
             <button onclick="addBalance()"
-                    class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[.2em] transition shadow-lg shadow-green-600/30 flex items-center justify-center gap-2">
-                <i class="fas fa-plus-circle"></i> Balansga Qo'shish
+                    class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[.2em] transition shadow-lg shadow-green-600/30 flex items-center justify-center gap-2 text-white">
+                <i class="fas fa-plus-circle"></i> <span data-i18n="balansQoshish">Balansga Qo'shish</span>
             </button>
         </div>
     </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     JAVASCRIPT
-══════════════════════════════════════ -->
-<script>
-// ─────────────────────────────────────────────
-// CONSTANTS
-// ─────────────────────────────────────────────
-const SK = {
-    USERS:   'mo_users',
-    SESSION: 'mo_session',
-    LOTS:    'mo_lots'
-};
-
-const CATS = {
-    transport:  { label:"Transport",      icon:"fa-car",       cls:"text-orange-400 bg-orange-400/10" },
-    realestate: { label:"Ko'chmas Mulk",  icon:"fa-building",  cls:"text-blue-400 bg-blue-400/10"    },
-    art:        { label:"San'at",         icon:"fa-palette",   cls:"text-purple-400 bg-purple-400/10" },
-    tech:       { label:"Texnologiya",    icon:"fa-microchip", cls:"text-cyan-400 bg-cyan-400/10"     },
-    jewelry:    { label:"Zargarlik",      icon:"fa-gem",       cls:"text-yellow-400 bg-yellow-400/10" }
-};
-
-const SEED_LOTS = [
-    {id:1,  name:"Bugatti Chiron Pur Sport",     cat:"transport",  price:3500000,  timer:7200,  img:"https://picsum.photos/seed/101/800/600", desc:"Dunyoning eng tez va eng chiroyli superkarlari biri", bids:[]},
-    {id:2,  name:"Penthouse Dubai Marina",        cat:"realestate", price:5200000,  timer:10800, img:"https://picsum.photos/seed/102/800/600", desc:"Dubay marina qirg'og'ida 60-qavatda hashamatli penthouse", bids:[]},
-    {id:3,  name:"SpaceX Starship NFT",           cat:"tech",       price:280000,   timer:3600,  img:"https://picsum.photos/seed/103/800/600", desc:"Elon Maskning shaxsan imzolagan eksklyuziv NFT kolleksiyasi", bids:[]},
-    {id:4,  name:"Private Island — Bahamas",      cat:"realestate", price:12000000, timer:14400, img:"https://picsum.photos/seed/104/800/600", desc:"Karib dengizidagi 50 gektar shaxsiy orol", bids:[]},
-    {id:5,  name:"Rolex Rainbow Daytona",         cat:"jewelry",    price:850000,   timer:5400,  img:"https://picsum.photos/seed/105/800/600", desc:"18K oltin va rangma-rang brilliantlardan iborat nodir soat", bids:[]},
-    {id:6,  name:"Tesla Cyberbeast 2025",         cat:"transport",  price:120000,   timer:4800,  img:"https://picsum.photos/seed/106/800/600", desc:"Tesla Cybertruck — Cyberbeast konfiguratsiyasi, 2025 model", bids:[]},
-    {id:7,  name:"Abstract Art #99 — Banksy",    cat:"art",        price:2100000,  timer:9000,  img:"https://picsum.photos/seed/107/800/600", desc:"Banksy original asari, autentiklik sertifikati bilan", bids:[]},
-    {id:8,  name:"Vintage Porsche 911 (1973)",    cat:"transport",  price:450000,   timer:6600,  img:"https://picsum.photos/seed/108/800/600", desc:"1973 yilgi Porsche 911 RS Carrera, original holati", bids:[]},
-    {id:9,  name:"Bali Ocean Villa",              cat:"realestate", price:1800000,  timer:12600, img:"https://picsum.photos/seed/109/800/600", desc:"Balidagi okean qirg'og'ida 5 xonali villa", bids:[]},
-    {id:10, name:"Apple Vision Pro — Gold Ed.",   cat:"tech",       price:25000,    timer:2700,  img:"https://picsum.photos/seed/110/800/600", desc:"Apple Vision Pro eksklyuziv kollektor versiyasi, oltin rang", bids:[]},
-    {id:11, name:"Mona Lisa NFT — Louvre",        cat:"art",        price:50000000, timer:86400, img:"https://picsum.photos/seed/111/800/600", desc:"Luvr muzeyining rasmiy Mona Lisa NFT sertifikati", bids:[]},
-    {id:12, name:"Blue Diamond — 15 karat",       cat:"jewelry",    price:5500000,  timer:18000, img:"https://picsum.photos/seed/112/800/600", desc:"15 karatlik natural ko'k brilliant, GIA sertifikati bilan", bids:[]},
-    {id:13, name:"Ferrari LaFerrari 2015",        cat:"transport",  price:3200000,  timer:8400,  img:"https://picsum.photos/seed/113/800/600", desc:"Ferrari LaFerrari — faqat 499 dona chiqarilgan", bids:[]},
-    {id:14, name:"Monaco Penthouse",              cat:"realestate", price:45000000, timer:86400, img:"https://picsum.photos/seed/114/800/600", desc:"Monakoning eng prestijli joyidagi penthouse", bids:[]},
-    {id:15, name:"IBM Quantum Computer Node",     cat:"tech",       price:8900000,  timer:7200,  img:"https://picsum.photos/seed/115/800/600", desc:"IBM kvant hisoblash moduli — 127 qubit", bids:[]},
-    {id:16, name:"Van Gogh Original Sketch 1889", cat:"art",        price:18000000, timer:43200, img:"https://picsum.photos/seed/116/800/600", desc:"Van Gog tomonidan 1889-yilda yaratilgan original sketchlar", bids:[]},
-];
-
-// ─────────────────────────────────────────────
-// STATE
-// ─────────────────────────────────────────────
-let ME      = null;   // current user object
-let balance = 2500000;
-let lots    = [];
-let curCat  = 'all';
-let ticker  = null;
-let mobOpen = false;
-let lastSave = 0;
-
-// ─────────────────────────────────────────────
-// UTILITIES
-// ─────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-
-function sHash(str) {
-    const salt = 'mathOyin$ecret2025';
-    let h = 5381;
-    const s = salt + str;
-    for (let i = 0; i < s.length; i++) h = ((h << 5) + h) ^ s.charCodeAt(i);
-    return btoa(Math.abs(h).toString(36) + str.length.toString(16) + 'x');
-}
-
-function fMoney(n) {
-    if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
-    if (n >= 1e3) return '$' + (n/1e3).toFixed(0) + 'K';
-    return '$' + n.toLocaleString();
-}
-
-function fTime(s) {
-    if (s <= 0) return '00:00:00';
-    const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
-    return [h,m,sec].map(v=>String(v).padStart(2,'0')).join(':');
-}
-
-function fDate(ts) {
-    return new Date(ts).toLocaleString('uz-UZ',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-}
-
-function uid() { return Date.now() + Math.random().toString(36).slice(2,7); }
-
-function initials(name) {
-    return name.split(' ').map(n=>n[0]||'').join('').toUpperCase().slice(0,2) || 'U';
-}
-
-// ─────────────────────────────────────────────
-// TOAST
-// ─────────────────────────────────────────────
-const TICO = {
-    success:'fa-check-circle text-green-400',
-    error:'fa-times-circle text-red-400',
-    info:'fa-info-circle text-blue-400',
-    warning:'fa-exclamation-triangle text-yellow-400'
-};
-
-function toast(msg, type='info', ms=4200) {
-    const wrap = $('toastWrap');
-    const el   = document.createElement('div');
-    el.className = `toast ${type}`;
-    el.innerHTML = `
-        <i class="fas ${TICO[type]||TICO.info} text-lg flex-shrink-0 mt-0.5"></i>
-        <div class="flex-1 min-w-0">
-            <p class="text-sm font-bold text-white leading-snug">${msg}</p>
+<!-- Profile Customization Modal -->
+<div class="m-overlay" id="mProfile" onclick="if(event.target===this)closeModal('mProfile')">
+    <div class="m-box">
+        <div class="flex justify-between items-center mb-7">
+            <h3 class="text-2xl font-black uppercase italic"><span data-i18n="profilSozlamalari">Profil Sozlamalari</span></h3>
+            <button onclick="closeModal('mProfile')" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-red-500/10 hover:border-red-500/30 transition">
+                <i class="fas fa-times text-gray-400"></i>
+            </button>
         </div>
-        <button onclick="rmToast(this.parentElement)" class="text-gray-500 hover:text-white transition flex-shrink-0 ml-1">
-            <i class="fas fa-times text-xs"></i>
-        </button>`;
-    el.onclick = e => { if(!e.target.closest('button')) rmToast(el); };
-    wrap.appendChild(el);
-    setTimeout(() => rmToast(el), ms);
-}
-
-function rmToast(el) {
-    if (!el || !el.parentElement) return;
-    el.classList.add('out');
-    setTimeout(() => el.remove(), 320);
-}
-
-// ─────────────────────────────────────────────
-// AUTH — USERS STORAGE
-// ─────────────────────────────────────────────
-function getUsers() {
-    try { return JSON.parse(localStorage.getItem(SK.USERS) || '[]'); }
-    catch { return []; }
-}
-function saveUsers(u) { localStorage.setItem(SK.USERS, JSON.stringify(u)); }
-
-function seedAdmin() {
-    const users = getUsers();
-    if (!users.some(u => u.role === 'admin')) {
-        users.push({
-            id: 'admin_001',
-            first: 'Jamshid', last: 'Eshpulatov',
-            username: '345231100735',
-            email: 'jamshid@mathoyin.uz',
-            hash: sHash('881441507'),
-            role: 'admin',
-            bal: 2500000,
-            created: Date.now(),
-            ava: 'JE'
-        });
-        saveUsers(users);
-    }
-}
-
-// ─────────────────────────────────────────────
-// AUTH — UI
-// ─────────────────────────────────────────────
-function switchTab(tab) {
-    const isLogin = tab === 'login';
-    $('formLogin').classList.toggle('hidden', !isLogin);
-    $('formRegister').classList.toggle('hidden', isLogin);
-    $('tabLogin').classList.toggle('on', isLogin);
-    $('tabRegister').classList.toggle('on', !isLogin);
-}
-
-function togglePwd(inputId, btn) {
-    const inp = $(inputId);
-    const ico = btn.querySelector('i');
-    if (inp.type === 'password') {
-        inp.type = 'text';
-        ico.classList.replace('fa-eye','fa-eye-slash');
-    } else {
-        inp.type = 'password';
-        ico.classList.replace('fa-eye-slash','fa-eye');
-    }
-}
-
-function strengthCheck(pass) {
-    let sc = 0;
-    if (pass.length >= 8)         sc++;
-    if (/[A-Z]/.test(pass))       sc++;
-    if (/[0-9]/.test(pass))       sc++;
-    if (/[^A-Za-z0-9]/.test(pass)) sc++;
-
-    const cols = ['bg-red-500','bg-orange-500','bg-yellow-500','bg-green-500'];
-    const lbls = ['','Juda zaif','Zaif',"O'rtacha",'Kuchli'];
-    const lcls = ['','text-red-500','text-orange-500','text-yellow-500','text-green-500'];
-
-    ['sb1','sb2','sb3','sb4'].forEach((id,i) => {
-        $(id).className = `s-bar flex-1 ${i < sc ? cols[sc-1] : 'bg-white/10'}`;
-    });
-    const lbl = $('strengthLabel');
-    lbl.textContent = lbls[sc] || '';
-    lbl.className = `text-[10px] mt-1 ml-1 h-4 ${lcls[sc] || 'text-gray-600'}`;
-}
-
-function doRegister() {
-    const first   = $('rg_first').value.trim();
-    const last    = $('rg_last').value.trim();
-    const uname   = $('rg_user').value.trim();
-    const email   = $('rg_email').value.trim().toLowerCase();
-    const pass    = $('rg_pass').value;
-    const confirm = $('rg_confirm').value;
-    const agree   = $('rg_agree').checked;
-    const box     = $('authBox');
-
-    const shake = () => { box.classList.add('shake'); setTimeout(()=>box.classList.remove('shake'),500); };
-
-    if (!first || !last)          { toast("Ism va familiyangizni kiriting",'error'); shake(); return; }
-    if (!uname || uname.length<3) { toast("Username kamida 3 ta belgidan iborat bo'lishi kerak",'error'); return; }
-    if (!email.includes('@'))     { toast("To'g'ri email manzil kiriting",'error'); return; }
-    if (pass.length < 6)         { toast("Parol kamida 6 ta belgidan iborat bo'lishi kerak",'error'); return; }
-    if (pass !== confirm)         { toast("Parollar bir xil emas!",'error'); shake(); return; }
-    if (!agree)                   { toast("Foydalanish shartlarini qabul qiling",'warning'); return; }
-
-    const users = getUsers();
-    if (users.some(u => u.username.toLowerCase() === uname.toLowerCase()))
-        { toast("Bu username band!",'error'); return; }
-    if (users.some(u => u.email === email))
-        { toast("Bu email allaqachon ro'yxatdan o'tgan!",'error'); return; }
-
-    const newUser = {
-        id: uid(),
-        first, last,
-        username: uname,
-        email,
-        hash: sHash(pass),
-        role: 'user',
-        bal: 2500000,
-        created: Date.now(),
-        ava: (first[0]+(last[0]||'')).toUpperCase()
-    };
-    users.push(newUser);
-    saveUsers(users);
-
-    toast(`🎉 Xush kelibsiz, ${first}! Hisobingiz yaratildi.`,'success',5000);
-    beginSession(newUser);
-}
-
-function checkAuth() {
-    const u = $('li_user').value.trim().toLowerCase();
-    const p = $('li_pass').value;
-    const box = $('authBox');
-    const shake = () => { box.classList.add('shake'); setTimeout(()=>box.classList.remove('shake'),500); };
-
-    if (!u || !p) { toast("Login va parolni to'ldiring",'error'); shake(); return; }
-
-    const users = getUsers();
-    const user  = users.find(x =>
-        (x.username.toLowerCase() === u || x.email === u) && x.hash === sHash(p)
-    );
-
-    if (user) {
-        beginSession(user);
-    } else {
-        toast("Xato login yoki parol!",'error');
-        shake();
-        $('li_pass').value = '';
-    }
-}
-
-function beginSession(user) {
-    ME = user;
-    sessionStorage.setItem(SK.SESSION, JSON.stringify({ uid: user.id, ts: Date.now() }));
-    showApp();
-}
-
-function showApp() {
-    $('authOverlay').style.display = 'none';
-    $('mainApp').style.display     = 'block';
-    document.body.style.overflow   = 'auto';
-
-    balance = ME.bal || 2500000;
-    syncBalanceUI();
-
-    $('heroName').textContent  = (ME.first || 'FOYDALANUVCHI').toUpperCase() + '!';
-    $('navAvatar').textContent = ME.ava || initials((ME.first||'')+(ME.last||''));
-    $('navAvatar').title       = `${ME.first||''} ${ME.last||''}`;
-
-    initApp();
-}
-
-function logout() {
-    if (ME) {
-        const users = getUsers();
-        const idx   = users.findIndex(u => u.id === ME.id);
-        if (idx !== -1) { users[idx].bal = balance; saveUsers(users); }
-    }
-    sessionStorage.removeItem(SK.SESSION);
-    if (ticker) clearInterval(ticker);
-    location.reload();
-}
-
-// ─────────────────────────────────────────────
-// APP INIT
-// ─────────────────────────────────────────────
-function initApp() {
-    try { lots = JSON.parse(localStorage.getItem(SK.LOTS) || 'null') || JSON.parse(JSON.stringify(SEED_LOTS)); }
-    catch { lots = JSON.parse(JSON.stringify(SEED_LOTS)); }
-    renderLots();
-    updateStats();
-    startTicker();
-}
-
-function saveLots() { localStorage.setItem(SK.LOTS, JSON.stringify(lots)); }
-
-// ─────────────────────────────────────────────
-// RENDER
-// ─────────────────────────────────────────────
-function catBadge(cat) {
-    const c = CATS[cat] || CATS.art;
-    return `<span class="cat-b ${c.cls}"><i class="fas ${c.icon} text-[8px]"></i>${c.label}</span>`;
-}
-
-function renderLots() {
-    const grid  = $('lotGrid');
-    const empty = $('emptyMsg');
-    if (!grid) return;
-
-    const q = ($('searchBox')?.value||'').toLowerCase();
-    const filtered = lots.filter(l =>
-        (curCat === 'all' || l.cat === curCat) &&
-        (!q || l.name.toLowerCase().includes(q))
-    );
-
-    if (!filtered.length) {
-        grid.innerHTML = '';
-        empty.classList.remove('hidden');
-        return;
-    }
-    empty.classList.add('hidden');
-
-    grid.innerHTML = filtered.map(l => {
-        const done = l.timer <= 0;
-        const bLen = l.bids ? l.bids.length : 0;
-        const tCol = done ? 'text-gray-400' : (l.timer < 300 ? 'text-orange-400' : 'text-red-400');
-
-        return `
-        <div class="lot-card glass fade-up ${done ? 'ended' : ''}">
-            <!-- Image -->
-            <div class="lot-img h-44 overflow-hidden relative" style="border-radius:1.4rem;margin-bottom:1rem;">
-                <img src="${l.img}" alt="${l.name}" loading="lazy"
-                     onerror="this.src='https://picsum.photos/seed/${l.id}/800/600'"
-                     class="w-full h-full object-cover">
-                <!-- Timer -->
-                <div class="absolute top-3 right-3 bg-black/70 backdrop-blur px-3 py-1.5 rounded-[10px] border border-white/10 ${tCol} font-mono text-[11px] font-bold flex items-center gap-1.5">
-                    ${done
-                        ? '<i class="fas fa-lock text-[9px]"></i><span>YAKUNLANDI</span>'
-                        : `<i class="fas fa-clock text-[9px]"></i><span id="t${l.id}">${fTime(l.timer)}</span>`
-                    }
-                </div>
-                <!-- Cat badge -->
-                <div class="absolute top-3 left-3">${catBadge(l.cat)}</div>
-            </div>
-
-            <!-- Body -->
-            <div class="flex flex-col flex-1 px-1">
-                <h3 class="text-[15px] font-black uppercase italic tracking-tight truncate mb-0.5">${l.name}</h3>
-                <p class="text-gray-600 text-[11px] mb-4 line-clamp-1">${l.desc||''}</p>
-
-                <div class="flex items-end justify-between mb-4">
-                    <div>
-                        <span class="text-[9px] text-gray-600 font-bold uppercase tracking-widest block">Joriy narx</span>
-                        <span class="text-[20px] font-black text-blue-500 tracking-tighter font-mono">$${l.price.toLocaleString()}</span>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-[9px] text-gray-600 font-bold uppercase tracking-widest block">Status</span>
-                        ${done
-                            ? '<span class="text-[9px] font-black text-red-500 uppercase"><i class="fas fa-lock mr-1 text-[8px]"></i>Yakunlandi</span>'
-                            : '<span class="text-[9px] font-black text-green-500 uppercase"><i class="fas fa-circle text-[7px] mr-1 animate-pulse"></i>Faol</span>'
-                        }
-                    </div>
-                </div>
-
-                <div class="border-t border-white/5 pt-3 mt-auto space-y-2">
-                    ${done
-                        ? `<button onclick="showHistory(${l.id})"
-                                   class="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition flex items-center justify-center gap-2">
-                               <i class="fas fa-history"></i>${bLen} ta taklif tarixi
-                           </button>`
-                        : `<input type="number" id="inp${l.id}"
-                                  placeholder="Min: $${(l.price+1).toLocaleString()}"
-                                  class="c-input text-center text-sm py-3" style="border-radius:12px;"
-                                  onkeydown="if(event.key==='Enter')placeBid(${l.id})">
-                           <div class="grid grid-cols-2 gap-2">
-                               <button onclick="placeBid(${l.id})"
-                                       class="py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-black text-[10px] uppercase tracking-widest transition flex items-center justify-center gap-1.5">
-                                   <i class="fas fa-gavel"></i>Taklif
-                               </button>
-                               <button onclick="showHistory(${l.id})"
-                                       class="py-3 bg-white/5 hover:bg-white/10 rounded-xl font-black text-[10px] uppercase tracking-widest text-gray-400 hover:text-white transition flex items-center justify-center gap-1.5">
-                                   <i class="fas fa-history"></i>${bLen}
-                               </button>
-                           </div>`
-                    }
-                </div>
-            </div>
-        </div>`;
-    }).join('');
-}
-
-function filterRender() { renderLots(); }
-
-function setCat(cat, btn) {
-    curCat = cat;
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
-    btn.classList.add('on');
-    renderLots();
-}
-
-// ─────────────────────────────────────────────
-// BID
-// ─────────────────────────────────────────────
-function placeBid(id) {
-    const lot = lots.find(l => l.id === id);
-    if (!lot) return;
-
-    if (lot.timer <= 0) { toast("Bu lot yakunlangan, taklif berish mumkin emas",'error'); return; }
-
-    const inp = $(`inp${id}`);
-    const val = parseInt(inp.value);
-    if (!val || isNaN(val)) { toast("Iltimos narxni to'g'ri kiriting",'warning'); return; }
-    if (val <= lot.price)   { toast(`Narx joriy narxdan ($${lot.price.toLocaleString()}) yuqori bo'lishi kerak!`,'error'); inp.classList.add('shake'); setTimeout(()=>inp.classList.remove('shake'),500); return; }
-
-    const diff = val - lot.price;
-    if (diff > balance) { toast(`Hisobingizda mablag' yetarli emas! Kerak: $${diff.toLocaleString()}`,'error'); return; }
-
-    balance   -= diff;
-    lot.price  = val;
-    lot.timer += 300; // +5 min
-
-    if (!lot.bids) lot.bids = [];
-    lot.bids.unshift({
-        user: ME ? `${ME.first} ${ME.last}` : 'Foydalanuvchi',
-        amount: val,
-        ts: Date.now()
-    });
-
-    inp.value = '';
-    if (ME) ME.bal = balance;
-
-    saveLots();
-    syncBalanceUI();
-    renderLots();
-    updateStats();
-    toast(`🎉 ${lot.name} uchun yangi taklif: $${val.toLocaleString()}`, 'success', 5000);
-}
-
-// ─────────────────────────────────────────────
-// STATS
-// ─────────────────────────────────────────────
-function updateStats() {
-    const active    = lots.filter(l => l.timer > 0).length;
-    const done      = lots.filter(l => l.timer <= 0).length;
-    const totalBids = lots.reduce((s,l) => s + (l.bids?.length||0), 0);
-    const topLot    = [...lots].sort((a,b) => b.price - a.price)[0];
-
-    $('stActive').textContent = active;
-    $('stDone').textContent   = done;
-    $('stBids').textContent   = totalBids;
-    $('stTop').textContent    = topLot ? fMoney(topLot.price) : '—';
-}
-
-function syncBalanceUI() {
-    $('navBalance').textContent  = '$' + balance.toLocaleString();
-    $('balDisplay').textContent  = '$' + balance.toLocaleString();
-}
-
-// ─────────────────────────────────────────────
-// TIMER
-// ─────────────────────────────────────────────
-function startTicker() {
-    if (ticker) clearInterval(ticker);
-    let needRender = false;
-
-    ticker = setInterval(() => {
-        lots.forEach(l => {
-            if (l.timer > 0) {
-                l.timer--;
-                const el = $(`t${l.id}`);
-                if (el) {
-                    if (l.timer <= 0) { needRender = true; }
-                    else              { el.textContent = fTime(l.timer); }
-                }
-            }
-        });
-
-        if (needRender) {
-            needRender = false;
-            renderLots();
-            updateStats();
-            saveLots();
-        }
-
-        // Periodic save every 60 s
-        const now = Date.now();
-        if (now - lastSave > 60000) { saveLots(); lastSave = now; }
-
-    }, 1000);
-}
-
-// ─────────────────────────────────────────────
-// MODALS
-// ─────────────────────────────────────────────
-function openModal(id) {
-    $(id).classList.add('open');
-    document.body.style.overflow = 'hidden';
-
-    if (id === 'mStats')   buildStats();
-    if (id === 'mBalance') syncBalanceUI();
-}
-function closeModal(id) {
-    $(id).classList.remove('open');
-    document.body.style.overflow = 'auto';
-}
-
-function buildStats() {
-    const active    = lots.filter(l => l.timer > 0);
-    const done      = lots.filter(l => l.timer <= 0);
-    const totalBids = lots.reduce((s,l) => s + (l.bids?.length||0), 0);
-    const topPrize  = [...lots].sort((a,b) => b.price - a.price)[0];
-    const topActive = [...lots].sort((a,b) => (b.bids?.length||0) - (a.bids?.length||0))[0];
-
-    $('statsContent').innerHTML = `
-        <div class="grid grid-cols-2 gap-3 mb-5">
-            <div class="s-card"><div class="text-2xl font-black text-blue-500 font-mono">${active.length}</div><div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Faol Lotlar</div></div>
-            <div class="s-card"><div class="text-2xl font-black text-red-500 font-mono">${done.length}</div><div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Yakunlangan</div></div>
-            <div class="s-card"><div class="text-2xl font-black text-green-500 font-mono">${totalBids}</div><div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Jami Takliflar</div></div>
-            <div class="s-card"><div class="text-2xl font-black text-purple-500 font-mono">${lots.length}</div><div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Jami Lotlar</div></div>
-        </div>
-        ${topPrize ? `
-        <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-4 mb-3">
-            <div class="text-[9px] text-yellow-500 font-black uppercase tracking-widest mb-1">🏆 Eng Qimmat Lot</div>
-            <div class="font-black truncate">${topPrize.name}</div>
-            <div class="text-yellow-500 font-mono font-black text-xl">$${topPrize.price.toLocaleString()}</div>
-        </div>` : ''}
-        ${topActive && topActive.bids?.length ? `
-        <div class="bg-green-500/10 border border-green-500/20 rounded-2xl p-4 mb-3">
-            <div class="text-[9px] text-green-500 font-black uppercase tracking-widest mb-1">🔥 Eng Faol Lot</div>
-            <div class="font-black truncate">${topActive.name}</div>
-            <div class="text-green-500 text-xs font-bold">${topActive.bids.length} ta taklif</div>
-        </div>` : ''}
-        <div class="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 mb-3">
-            <div class="text-[9px] text-blue-500 font-black uppercase tracking-widest mb-1">💰 Joriy Balans</div>
-            <div class="text-blue-500 font-mono font-black text-2xl">$${balance.toLocaleString()}</div>
-        </div>
-        ${ME ? `
-        <div class="bg-white/5 border border-white/8 rounded-2xl p-4">
-            <div class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-2">👤 Foydalanuvchi</div>
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-sm font-black">${ME.ava||'U'}</div>
+        <div class="space-y-4 text-left">
+            <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <div class="font-black">${ME.first} ${ME.last}</div>
-                    <div class="text-gray-500 text-xs">@${ME.username}</div>
-                    <div class="text-[9px] text-gray-600 mt-0.5">${ME.role==='admin'?'⭐ Administrator':'👤 Foydalanuvchi'}</div>
-                </div>
-            </div>
-        </div>` : ''}
-    `;
-}
-
-function showHistory(id) {
-    const lot = lots.find(l => l.id === id);
-    if (!lot) return;
-    $('histSubtitle').textContent = lot.name;
-    const bids = lot.bids || [];
-
-    $('histContent').innerHTML = bids.length === 0 ? `
-        <div class="text-center py-14">
-            <i class="fas fa-history text-4xl text-gray-700 mb-3"></i>
-            <p class="text-gray-600 text-sm font-bold uppercase tracking-widest">Hozircha taklif yo'q</p>
-        </div>` : bids.map((b,i) => `
-        <div class="bid-row">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-black flex-shrink-0">
-                    ${initials(b.user||'U')}
+                    <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5" data-i18n="ism">Ism *</label>
+                    <input id="up_first" type="text" placeholder="Ismingiz" class="c-input">
                 </div>
                 <div>
-                    <div class="text-sm font-bold">${b.user||'Foydalanuvchi'}</div>
-                    <div class="text-[10px] text-gray-500">${fDate(b.ts)}</div>
+                    <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5" data-i18n="familiya">Familiya *</label>
+                    <input id="up_last" type="text" placeholder="Familiyangiz" class="c-input">
                 </div>
             </div>
-            <div class="text-right">
-                <div class="font-black text-blue-500 font-mono">$${b.amount.toLocaleString()}</div>
-                ${i===0?'<div class="text-[9px] text-green-500 font-bold">Joriy lider 🥇</div>':''}
+            <div>
+                <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5">Email *</label>
+                <input id="up_email" type="email" placeholder="email@example.com" class="c-input">
             </div>
-        </div>`).join('');
+            <div>
+                <label class="block text-[10px] font-black text-gray-600 uppercase tracking-widest ml-1 mb-1.5" data-i18n="avatarGrad">Avatar Gradienti</label>
+                <div class="grid grid-cols-4 gap-2 mt-2">
+                    <div class="gradient-option w-full h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 cursor-pointer border-2 border-transparent transition" data-gradient="from-blue-500 to-purple-600" onclick="selectProfileGradient(this, 'from-blue-500 to-purple-600')"></div>
+                    <div class="gradient-option w-full h-10 rounded-xl bg-gradient-to-br from-red-500 to-yellow-500 cursor-pointer border-2 border-transparent transition" data-gradient="from-red-500 to-yellow-500" onclick="selectProfileGradient(this, 'from-red-500 to-yellow-500')"></div>
+                    <div class="gradient-option w-full h-10 rounded-xl bg-gradient-to-br from-green-400 to-cyan-500 cursor-pointer border-2 border-transparent transition" data-gradient="from-green-400 to-cyan-500" onclick="selectProfileGradient(this, 'from-green-400 to-cyan-500')"></div>
+                    <div class="gradient-option w-full h-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 cursor-pointer border-2 border-transparent transition" data-gradient="from-pink-500 to-rose-600" onclick="selectProfileGradient(this, 'from-pink-500 to-rose-600')"></div>
+                </div>
+            </div>
+            <button onclick="saveProfile()"
+                    class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black text-[11px] uppercase tracking-[.2em] transition shadow-lg shadow-blue-600/30 mt-1 flex items-center justify-center gap-2 text-white">
+                <i class="fas fa-save"></i> <span data-i18n="saqlash">Saqlash</span>
+            </button>
+        </div>
+    </div>
+</div>
 
-    openModal('mHistory');
-}
+<!-- 👤 Shaxsiy Kabinet Modal -->
+<div class="m-overlay" id="mCabinet" onclick="if(event.target===this)closeModal('mCabinet')">
+    <div class="m-box max-w-lg">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-black uppercase italic" id="cabTitle">Shaxsiy <span class="text-blue-500">Kabinet</span></h3>
+            <button onclick="closeModal('mCabinet')" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-red-500/10 hover:border-red-500/30 transition">
+                <i class="fas fa-times text-gray-400"></i>
+            </button>
+        </div>
+        
+        <!-- Profile Summary -->
+        <div class="flex items-center gap-4 bg-white/5 border border-white/5 rounded-2xl p-5 mb-6 text-left">
+            <div id="cabAvatar" class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white bg-gradient-to-br from-blue-500 to-purple-600 flex-shrink-0">JE</div>
+            <div class="flex-1 min-w-0">
+                <h4 id="cabName" class="text-lg font-black truncate text-white">Jamshid Eshpulatov</h4>
+                <p id="cabUsername" class="text-gray-500 text-sm">@345231100735</p>
+                <span id="cabRoleBadge" class="inline-block text-[9px] uppercase tracking-widest font-black text-blue-500 mt-1">Foydalanuvchi</span>
+            </div>
+            <button onclick="openProfileModal()" class="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-500/20 text-blue-500 hover:bg-blue-600/20 transition flex items-center justify-center" title="Profilni tahrirlash">
+                <i class="fas fa-user-edit"></i>
+            </button>
+        </div>
 
-// ─────────────────────────────────────────────
-// ADD LOT
-// ─────────────────────────────────────────────
-function addLot() {
-    const name  = $('nl_name').value.trim();
-    const price = parseInt($('nl_price').value);
-    const hrs   = parseInt($('nl_hours').value) || 24;
-    const cat   = $('nl_cat').value;
-    const img   = $('nl_img').value.trim();
-    const desc  = $('nl_desc').value.trim();
+        <!-- User Metrics -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+            <div class="s-card p-3">
+                <div class="text-lg font-black text-blue-500 font-mono truncate" id="cabBalance">$0</div>
+                <div class="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1" id="cabBalanceLabel" data-i18n="balans">Balans</div>
+            </div>
+            <div class="s-card p-3">
+                <div class="text-lg font-black text-green-500 font-mono" id="cabWonCount">0</div>
+                <div class="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1" id="cabWonLabel" data-i18n="yutilganLotlar">Yutilgan Lotlar</div>
+            </div>
+            <div class="s-card p-3">
+                <div class="text-lg font-black text-yellow-500 font-mono truncate" id="cabSpentAmt">$0</div>
+                <div class="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1" id="cabSpentLabel" data-i18n="sarflandi">Sarflandi</div>
+            </div>
+        </div>
 
-    if (!name)          { toast("Lot nomini kiriting",'error'); return; }
-    if (!price||price<1){ toast("To'g'ri boshlang'ich narx kiriting",'error'); return; }
+        <!-- Navigation Tabs for Cabinet -->
+        <div class="flex gap-2 bg-white/5 p-1 rounded-[12px] mb-4">
+            <div class="a-tab on text-[9px] py-2" id="cabTabWon" onclick="switchCabinetTab('won')" data-i18n="yutilganLotlar">Yutilgan Lotlar</div>
+            <div class="a-tab text-[9px] py-2" id="cabTabActive" onclick="switchCabinetTab('active')" data-i18n="faolBoshlashlar">Faol Boshlashlar</div>
+        </div>
 
-    const newLot = {
-        id: Date.now(), name, cat, price,
-        timer: hrs * 3600,
-        img: img || `https://picsum.photos/seed/${Date.now()%1000}/800/600`,
-        desc: desc || 'Yangi lot',
-        bids: []
-    };
-    lots.unshift(newLot);
-    saveLots();
-    closeModal('mAddLot');
-    renderLots();
-    updateStats();
-    toast(`"${name}" lot qo'shildi!`,'success');
+        <!-- Tab Contents -->
+        <div id="cabTabContent" class="space-y-3 max-h-60 overflow-y-auto pr-1 text-left"></div>
+    </div>
+</div>
 
-    ['nl_name','nl_price','nl_hours','nl_img','nl_desc'].forEach(id => $(id).value = '');
-}
+<!-- ⭐ Admin Panel Modal -->
+<div class="m-overlay" id="mAdmin" onclick="if(event.target===this)closeModal('mAdmin')">
+    <div class="m-box max-w-3xl">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-black uppercase italic" id="admTitle">Admin <span class="text-blue-500">Boshqaruv Paneli</span></h3>
+            <button onclick="closeModal('mAdmin')" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-red-500/10 hover:border-red-500/30 transition">
+                <i class="fas fa-times text-gray-400"></i>
+            </button>
+        </div>
 
-// ─────────────────────────────────────────────
-// BALANCE
-// ─────────────────────────────────────────────
-function quickBal(n) { $('balAmt').value = n; }
-function addBalance() {
-    const n = parseInt($('balAmt').value);
-    if (!n || n <= 0) { toast("To'g'ri miqdor kiriting",'error'); return; }
-    balance += n;
-    if (ME) ME.bal = balance;
-    $('balAmt').value = '';
-    closeModal('mBalance');
-    syncBalanceUI();
-    toast(`Balansingizga $${n.toLocaleString()} qo'shildi! Yangi balans: $${balance.toLocaleString()}`,'success',5000);
-}
+        <!-- Admin Panel Navigation -->
+        <div class="flex gap-2 bg-white/5 p-1 rounded-[12px] mb-5 flex-wrap">
+            <div class="a-tab on text-[10px] py-2.5" id="admTabUsers" onclick="switchAdminTab('users')"><i class="fas fa-users mr-1"></i>Foydalanuvchilar</div>
+            <div class="a-tab text-[10px] py-2.5" id="admTabLots" onclick="switchAdminTab('lots')"><i class="fas fa-gavel mr-1"></i>Lotlar</div>
+            <div class="a-tab text-[10px] py-2.5" id="admTabStats" onclick="switchAdminTab('stats')"><i class="fas fa-chart-pie mr-1"></i>Statistika</div>
+            <div class="a-tab text-[10px] py-2.5" id="admTabSettings" onclick="switchAdminTab('settings')"><i class="fas fa-cog mr-1"></i>Sozlamalar</div>
+        </div>
 
-// ─────────────────────────────────────────────
-// MOBILE MENU
-// ─────────────────────────────────────────────
-function toggleMobMenu() {
-    mobOpen = !mobOpen;
-    $('mobileMenu').classList.toggle('open', mobOpen);
-    $('burgerIco').className = `fas ${mobOpen ? 'fa-times' : 'fa-bars'} text-gray-400 text-sm`;
-    document.body.style.overflow = mobOpen ? 'hidden' : 'auto';
-}
-function closeMobMenu() {
-    mobOpen = false;
-    $('mobileMenu').classList.remove('open');
-    $('burgerIco').className = 'fas fa-bars text-gray-400 text-sm';
-    document.body.style.overflow = 'auto';
-}
+        <!-- Tab Content: Users -->
+        <div id="admContentUsers" class="space-y-4 text-left">
+            <!-- Search & Filter Bar -->
+            <div class="flex gap-2 mb-3">
+                <div class="relative flex-1">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none"></i>
+                    <input id="admUserSearch" type="text" placeholder="Foydalanuvchi qidirish..." class="c-input pl-9 py-2.5 text-xs rounded-xl" oninput="renderAdminPanel()">
+                </div>
+                <select id="admUserFilter" class="c-input py-2.5 text-xs rounded-xl w-32" onchange="renderAdminPanel()">
+                    <option value="all">Barchasi</option>
+                    <option value="admin">Adminlar</option>
+                    <option value="user">Foydalanuvchilar</option>
+                </select>
+            </div>
+            <div id="admUsersSummary" class="grid grid-cols-3 gap-3 mb-4"></div>
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="foydalanuvchi">Foydalanuvchi</th>
+                            <th data-i18n="rol">Rol</th>
+                            <th data-i18n="balans">Balans</th>
+                            <th>Faollik</th>
+                            <th data-i18n="amallar">Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admUsersTableBody"></tbody>
+                </table>
+            </div>
+        </div>
 
-// ─────────────────────────────────────────────
-// BOOTSTRAP
-// ─────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-    seedAdmin();
+        <!-- Tab Content: Lots -->
+        <div id="admContentLots" class="hidden space-y-4 text-left">
+            <div class="flex gap-2 mb-3">
+                <div class="relative flex-1">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none"></i>
+                    <input id="admLotSearch" type="text" placeholder="Lot qidirish..." class="c-input pl-9 py-2.5 text-xs rounded-xl" oninput="renderAdminPanel()">
+                </div>
+                <select id="admLotFilter" class="c-input py-2.5 text-xs rounded-xl w-32" onchange="renderAdminPanel()">
+                    <option value="all">Barchasi</option>
+                    <option value="active">Faol</option>
+                    <option value="ended">Yakunlangan</option>
+                </select>
+            </div>
+            <div id="admLotsSummary" class="grid grid-cols-3 gap-3 mb-4"></div>
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Lot Nomi</th>
+                            <th>Kategoriya</th>
+                            <th>Joriy Narx</th>
+                            <th>Takliflar</th>
+                            <th>Status</th>
+                            <th>Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admLotsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
 
-    const raw = sessionStorage.getItem(SK.SESSION);
-    if (raw) {
-        try {
-            const { uid: uid_ } = JSON.parse(raw);
-            const user = getUsers().find(u => u.id === uid_);
-            if (user) { ME = user; showApp(); return; }
-        } catch {}
-    }
+        <!-- Tab Content: Statistics -->
+        <div id="admContentStats" class="hidden space-y-5 text-left">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="admStatsCards"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="adm-panel-card">
+                    <h5 class="adm-panel-label">🏆 Top 5 Qimmat Lotlar</h5>
+                    <div id="admTopLots" class="space-y-2 mt-3"></div>
+                </div>
+                <div class="adm-panel-card">
+                    <h5 class="adm-panel-label">👑 Top Foydalanuvchilar</h5>
+                    <div id="admTopUsers" class="space-y-2 mt-3"></div>
+                </div>
+            </div>
+            <div class="adm-panel-card">
+                <h5 class="adm-panel-label">📊 Kategoriya Bo'yicha Taqsimot</h5>
+                <div id="admCatStats" class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-3"></div>
+            </div>
+        </div>
 
-    $('authOverlay').style.display = 'flex';
-});
-</script>
+        <!-- Tab Content: Settings -->
+        <div id="admContentSettings" class="hidden space-y-5 text-left">
+            <div class="adm-panel-card">
+                <h5 class="adm-panel-label">⚙️ Platforma Sozlamalari</h5>
+                <div class="space-y-4 mt-4">
+                    <div class="flex items-center justify-between py-3 border-b border-white/5">
+                        <div>
+                            <p class="text-sm font-bold adm-setting-text">Bot Simulyatori</p>
+                            <p class="text-xs text-gray-500 mt-0.5">Avtomatik bot takliflari</p>
+                        </div>
+                        <button id="admBotToggle" onclick="toggleAdminBot()" class="adm-toggle-btn on">
+                            <span class="adm-toggle-knob"></span>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between py-3 border-b border-white/5">
+                        <div>
+                            <p class="text-sm font-bold adm-setting-text">Real-Time Sinxronizatsiya</p>
+                            <p class="text-xs text-gray-500 mt-0.5">Tab orasida real-time yangilanish</p>
+                        </div>
+                        <span class="text-[10px] font-black text-green-500 uppercase tracking-widest">● Faol</span>
+                    </div>
+                    <div class="flex items-center justify-between py-3">
+                        <div>
+                            <p class="text-sm font-bold adm-setting-text">Ovozli Bildirishnomalar</p>
+                            <p class="text-xs text-gray-500 mt-0.5">Taklif va g'alaba ovozlari</p>
+                        </div>
+                        <span class="text-[10px] font-black text-green-500 uppercase tracking-widest">● Faol</span>
+                    </div>
+                </div>
+            </div>
+            <div class="adm-panel-card border border-red-500/20">
+                <h5 class="adm-panel-label text-red-500">⚠️ Xavfli Zona</h5>
+                <div class="space-y-3 mt-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-bold adm-setting-text">Barcha Lotlarni Tiklash</p>
+                            <p class="text-xs text-gray-500 mt-0.5">Seed lotlarni qayta yuklash</p>
+                        </div>
+                        <button onclick="adminResetLots()" class="px-4 py-2 rounded-xl bg-yellow-600/20 border border-yellow-500/30 text-yellow-500 text-[10px] font-black uppercase tracking-widest hover:bg-yellow-600/30 transition">
+                            <i class="fas fa-redo mr-1.5"></i>Tiklash
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-white/5">
+                        <div>
+                            <p class="text-sm font-bold adm-setting-text">Barcha Ma'lumotlarni Tozalash</p>
+                            <p class="text-xs text-gray-500 mt-0.5">Foydalanuvchilar va lotlar o'chadi</p>
+                        </div>
+                        <button onclick="adminClearAll()" class="px-4 py-2 rounded-xl bg-red-600/20 border border-red-500/30 text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-600/30 transition">
+                            <i class="fas fa-trash-alt mr-1.5"></i>Tozalash
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="adm-panel-card">
+                <h5 class="adm-panel-label">ℹ️ Tizim Ma'lumotlari</h5>
+                <div class="grid grid-cols-2 gap-3 mt-3" id="admSysInfo"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 📦 3D Model Preview Modal -->
+<div class="m-overlay" id="m3dPreview" onclick="if(event.target===this)close3dPreview()">
+    <div class="m-box max-w-xl">
+        <div class="flex justify-between items-center mb-6">
+            <div class="text-left">
+                <h3 class="text-2xl font-black uppercase italic" id="p3dTitle">3D <span class="text-blue-500">Preview</span></h3>
+                <p id="p3dSubtitle" class="text-gray-500 text-xs mt-0.5">Procedural 3D Rendered Object</p>
+            </div>
+            <button onclick="close3dPreview()" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-red-500/10 hover:border-red-500/30 transition">
+                <i class="fas fa-times text-gray-400"></i>
+            </button>
+        </div>
+        
+        <!-- Three.js Canvas Container -->
+        <div class="relative">
+            <div id="previewCanvas3d"></div>
+            <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur px-3 py-1.5 rounded-[10px] border border-white/10 text-white font-medium text-[10px] flex items-center gap-1.5 pointer-events-none">
+                <i class="fas fa-arrows-alt"></i> <span data-i18n="interact3d">Sichqoncha orqali aylantiring</span>
+            </div>
+        </div>
+        
+        <div class="bg-blue-600/10 border border-blue-500/20 rounded-2xl p-4 text-left">
+            <p id="p3dDesc" class="text-gray-400 text-sm leading-relaxed italic">
+                Procedural 3D models allow high-fidelity interaction with no network overhead. Rotate or zoom the model dynamically.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript Logic -->
+<script src="script.js"></script>
 </body>
 </html>
